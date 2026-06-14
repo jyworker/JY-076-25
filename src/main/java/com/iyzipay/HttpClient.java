@@ -1,6 +1,5 @@
 package com.iyzipay;
 
-import com.google.gson.Gson;
 import com.iyzipay.exception.HttpClientException;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -52,12 +51,11 @@ public class HttpClient {
     }
 
     private <T> T exchange(String url, Proxy proxy, HttpMethod httpMethod, Map<String, String> headers, Object request, Class<T> responseType) {
-        Gson gson = new Gson();
-        String body = gson.toJson(request);
+        String body = GsonProvider.getGson().toJson(request);
         try {
             InputStream content = request == null ? null : new ByteArrayInputStream(body.getBytes(DEFAULT_CHARSET));
             String response = send(url, proxy, httpMethod, content, headers);
-            return gson.fromJson(response, responseType);
+            return GsonProvider.getGson().fromJson(response, responseType);
         } catch (UnsupportedEncodingException e) {
             throw new HttpClientException(e.getMessage(), e);
         }

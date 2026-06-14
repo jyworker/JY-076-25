@@ -1,11 +1,13 @@
 package com.iyzipay.model;
 
+import com.iyzipay.utils.TimeBoundaryUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class PaymentDetail {
 
@@ -305,6 +307,45 @@ public class PaymentDetail {
 
     public void setItemTransactions(List<PaymentTxDetail> itemTransactions) {
         this.itemTransactions = itemTransactions;
+    }
+
+    public Date getBusinessDate() {
+        return getBusinessDate(TimeZone.getTimeZone(TimeBoundaryUtils.TURKEY_TIMEZONE_ID));
+    }
+
+    public Date getBusinessDate(TimeZone timeZone) {
+        if (createdDate == null) {
+            return null;
+        }
+        return TimeBoundaryUtils.normalizeToBusinessDate(createdDate, createdDate, timeZone);
+    }
+
+    public String getBusinessDateString() {
+        return getBusinessDateString(TimeZone.getTimeZone(TimeBoundaryUtils.TURKEY_TIMEZONE_ID));
+    }
+
+    public String getBusinessDateString(TimeZone timeZone) {
+        Date businessDate = getBusinessDate(timeZone);
+        if (businessDate == null) {
+            return null;
+        }
+        return TimeBoundaryUtils.formatDateOnlyTurkey(businessDate);
+    }
+
+    public boolean isDstAffected() {
+        return isDstAffected(TimeZone.getTimeZone(TimeBoundaryUtils.TURKEY_TIMEZONE_ID));
+    }
+
+    public boolean isDstAffected(TimeZone timeZone) {
+        return createdDate != null && TimeBoundaryUtils.isDaylightSavingTransitionDay(createdDate, timeZone);
+    }
+
+    public boolean isDstAffectedTransaction() {
+        return isDstAffectedTransaction(TimeZone.getTimeZone(TimeBoundaryUtils.TURKEY_TIMEZONE_ID));
+    }
+
+    public boolean isDstAffectedTransaction(TimeZone timeZone) {
+        return createdDate != null && TimeBoundaryUtils.isDstAffectedHour(createdDate, timeZone);
     }
 
     @Override

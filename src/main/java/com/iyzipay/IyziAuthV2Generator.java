@@ -1,6 +1,5 @@
 package com.iyzipay;
 
-import com.google.gson.Gson;
 import com.iyzipay.exception.HttpClientException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -39,6 +38,6 @@ public final class IyziAuthV2Generator {
     }
 
     private static String getPayload(String path, Object request) {
-        return request == null ? path : path + new Gson().toJson(request);
+        return request == null ? path : path + GsonProvider.getGsonForSignature().toJson(request);
     }
 }
